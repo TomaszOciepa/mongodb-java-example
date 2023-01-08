@@ -3,9 +3,13 @@ package com.tom.mongodbspring;
 
 import com.github.javafaker.Faker;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,19 +20,38 @@ public class MongoDbConfig {
     private MongoTemplate mongoTemplate;
     private ArticleRepo articleRepo;
 
+    @Bean
+    public MongoTransactionManager mongoTransactionManager(MongoDatabaseFactory mongoDatabaseFactory){
+        return new MongoTransactionManager(mongoDatabaseFactory);
+    }
+
     public MongoDbConfig(MongoTemplate mongoTemplate, ArticleRepo articleRepo) {
         this.mongoTemplate = mongoTemplate;
         this.articleRepo = articleRepo;
     }
 
+    @Transactional
+    public void tryAddElement() {
 
-    
+        Faker faker = new Faker();
+
+        Article article = new Article();
+        article.setAuthor("Mangi Mangan");
+        article.setTitle("O kościach i karmach");
+
+        Comment comment1 = new Comment();
+        comment1.setText(faker.chuckNorris().fact());
+        Comment comment2 = new Comment();
+        comment2.setText(faker.chuckNorris().fact());
+
+        article.setComment(Arrays.asList(comment1, comment2));
+
+        articleRepo.save(article);
+        System.out.println(10/0);
+    }
 
 
-
-
-
-    public void init(){
+    public void init() {
         System.out.println("Hello World");
 //        int index = 0;
 //
@@ -75,7 +98,7 @@ public class MongoDbConfig {
 //        System.out.println(all);
 
         Article article99 = articleRepo.findArticleByTitle("Baza mongo działaj!!!").get();
-        System.out.println(article99.getComment()+ " "+ article99.getAuthor());
+        System.out.println(article99.getComment() + " " + article99.getAuthor());
     }
 
 }

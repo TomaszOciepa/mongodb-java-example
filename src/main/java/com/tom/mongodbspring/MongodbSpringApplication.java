@@ -1,5 +1,6 @@
 package com.tom.mongodbspring;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,6 +13,11 @@ public class MongodbSpringApplication {
 		SpringApplication.run(MongodbSpringApplication.class, args);
 	}
 
+	@Autowired
+	MongoDbConfig mongoDbConfig;
 
-
+	@EventListener(ApplicationReadyEvent.class)
+	public void get(){
+		mongoDbConfig.tryAddElement();
+	}
 }
