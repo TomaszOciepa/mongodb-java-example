@@ -12,7 +12,6 @@ public class Article {
     @Id
     private String id;
 
-    @Indexed(unique = true)
     private String author;
 
     private String title;
