@@ -1,9 +1,12 @@
 package com.tom.mongodbspring;
 
 
+import com.github.javafaker.Faker;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -21,22 +24,35 @@ public class MongoDbConfig {
     @EventListener(ApplicationReadyEvent.class)
     public void init(){
 
-        Article article = new Article();
-        article.setAuthor("Tomasz Ociepa");
-        article.setTitle("Nauka mongodb-spring");
+        int index = 0;
 
-        Comment comment1 = new Comment();
-        comment1.setText("Wow ale dobry artykuł!!");
-        Comment comment2 = new Comment();
-        comment2.setText("Jest świetny!!");
+        while (index < 100){
+            Faker faker = new Faker();
 
-        article.setComment(Arrays.asList(comment1, comment2));
+            Article article = new Article();
+            article.setAuthor(faker.dragonBall().character());
+            article.setTitle(faker.book().title());
 
-        mongoTemplate.insert(article);
+            Comment comment1 = new Comment();
+            comment1.setText(faker.chuckNorris().fact());
+            Comment comment2 = new Comment();
+            comment2.setText(faker.chuckNorris().fact());
 
-        List<Article> all = mongoTemplate.findAll(Article.class);
+            article.setComment(Arrays.asList(comment1, comment2));
 
-        System.out.println(all);
+            mongoTemplate.insert(article);
+
+            index++;
+        }
+
+//        List<Article> all = mongoTemplate.findAll(Article.class);
+//        System.out.println(all);
+
+        //author: Nappa
+        Query query = new Query((Criteria.where("author").is("Nappa")));
+        List<Article> article = mongoTemplate.find(query, Article.class, "article");
+
+        System.out.println(article);
 
 
     }
